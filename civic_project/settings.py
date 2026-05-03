@@ -4,6 +4,7 @@ Django settings for Smart Civic Issue Reporting System
 
 from pathlib import Path
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -66,6 +67,13 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Use external PostgreSQL if DATABASE_URL is set (Production)
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 
 # For MySQL (optional) — uncomment and configure:
 # DATABASES = {

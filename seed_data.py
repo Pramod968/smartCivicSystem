@@ -5,6 +5,16 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'civic_project.settings')
 django.setup()
 
 from complaints.models import Category, Department
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+# Create Superuser
+if not User.objects.filter(username='superuser').exists():
+    user = User.objects.create_superuser('superuser', 'admin@smartcivic.local', 'admin123')
+    user.role = 'admin'
+    user.save()
+    print("Created superuser: superuser / admin123")
 
 # Create Categories
 categories = [
