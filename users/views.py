@@ -58,3 +58,24 @@ def profile_view(request):
         return redirect('users:profile')
 
     return render(request, 'users/profile.html', {'form': form})
+
+
+def setup_admin_view(request):
+    """Hidden route to force-create the admin user on restricted servers."""
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
+    if not User.objects.filter(username='superuser').exists():
+        user = User.objects.create_superuser('superuser', 'admin@smartcivic.local', 'admin123')
+        user.role = 'admin'
+        user.save()
+        messages.success(request, '✅ Admin account created! You can now log in.')
+    else:
+        # If it exists, reset the password just in case
+        user = User.objects.get(username='superuser')
+        user.set_password('admin123')
+        user.role = 'admin'
+        user.save()
+        messages.info(request, '✅ Admin account reset! Password is now admin123.')
+        
+    return redirect('users:login')
